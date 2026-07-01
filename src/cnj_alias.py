@@ -65,6 +65,9 @@ def cnj_para_alias(numero: str) -> str:
     p = partes_cnj(numero)
     j, tr = p["justica"], p["tribunal"]
 
+    if j == "5" and tr == "00":  # TST — checar antes do ramo genérico da Justiça do Trabalho
+        return "api_publica_tst"
+
     if j == "8":  # Justiça Estadual
         uf = _ESTADUAL_TR_TO_UF.get(tr)
         if not uf:
@@ -87,9 +90,6 @@ def cnj_para_alias(numero: str) -> str:
 
     if j in _SUPERIORES:
         return f"api_publica_{_SUPERIORES[j]}"
-
-    if j == "5" and tr == "00":  # TST
-        return "api_publica_tst"
 
     raise ValueError(
         f"Segmento do Judiciário não mapeado (J={j}, TR={tr}). "
