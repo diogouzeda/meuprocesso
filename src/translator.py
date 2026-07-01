@@ -49,7 +49,7 @@ def _chamar_llm(nome_movimento: str, contexto: str) -> dict[str, Any]:
     api_key = os.getenv("LLM_API_KEY")
     if not api_key:
         raise RuntimeError("LLM_API_KEY não definida (ver .env.example).")
-    model = os.getenv("LLM_MODEL", "claude-sonnet-4-5")
+    model = os.getenv("LLM_MODEL", "claude-sonnet-5")
 
     client = anthropic.Anthropic(api_key=api_key)
     user_msg = (
@@ -64,6 +64,8 @@ def _chamar_llm(nome_movimento: str, contexto: str) -> dict[str, Any]:
         messages=[{"role": "user", "content": user_msg}],
     )
     texto = "".join(bloco.text for bloco in resp.content if bloco.type == "text").strip()
+    if texto.startswith("```"):
+        texto = texto.strip("`").removeprefix("json").strip()
     return json.loads(texto)
 
 
