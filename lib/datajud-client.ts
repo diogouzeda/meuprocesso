@@ -52,6 +52,13 @@ export async function buscarProcesso(
       body: JSON.stringify(payload),
       signal: controller.signal,
     });
+  } catch (e) {
+    if (e instanceof Error && e.name === "AbortError") {
+      throw new DataJudError(
+        `Tempo limite excedido consultando o DataJud (${(opts.timeoutMs ?? 30_000) / 1000}s). O tribunal pode estar lento; tente novamente.`
+      );
+    }
+    throw new DataJudError(`Falha ao conectar ao DataJud: ${(e as Error).message}`);
   } finally {
     clearTimeout(timeout);
   }
